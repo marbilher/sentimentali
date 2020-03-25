@@ -7,15 +7,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
+import com.google.gson.JsonParser
+import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-
 class MainActivity : AppCompatActivity() {
     private val TAG = "MyActivity"
-    private var myAdapter: MyAdapter? = null
 
     private var myRecyclerView: RecyclerView? = null
 
@@ -25,6 +27,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+        table_main.layoutManager = LinearLayoutManager(this)
 
 //Create a handler for the RetrofitInstance interface//
         val service = RetrofitClient.getRetrofitInstance(context)!!.create(GetData::class.java)
@@ -37,9 +41,12 @@ class MainActivity : AppCompatActivity() {
                 call: Call<TweetList?>,
                 response: Response<TweetList?>
             ) {
-                Log.i(TAG, response.body().toString())
+                val body = Gson().toJson(response.body())
+                val parser = JsonParser()
+                val retVal: String = parser.parse(body).toString()
+                Log.i(TAG, "received from API: $body")
                 Toast.makeText(this@MainActivity, "Successful response", Toast.LENGTH_SHORT).show()
-                //                loadDataList(response.body());
+                parseTweets(body)
             }
 
             //Handle execution failures//
@@ -48,24 +55,25 @@ class MainActivity : AppCompatActivity() {
                 throwable: Throwable
             ) {
 
-//If the request fails, then display the following toast//
+                //If the request fails, then display the following toast//
                 Toast.makeText(this@MainActivity, "Failed API call", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    //Display the retrieved data as a list//
-    private fun loadDataList(usersList: List<Tweet>) {
+    private  fun parseTweets(fromString: String){
 
-//Get a reference to the RecyclerView//
-        myRecyclerView = findViewById(R.id.myRecyclerView)
-        myAdapter = MyAdapter(usersList)
+        val jsonArray = JSONObject(fromString).getJSONArray("statuses")
 
-//Use a LinearLayoutManager with default vertical orientation//
-        val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this@MainActivity)
-        myRecyclerView?.setLayoutManager(layoutManager)
+        var list = ArrayList<Tweet>()
 
-//Set the Adapter to the RecyclerView//
-        myRecyclerView?.setAdapter(myAdapter)
+        for (x in 0 until jsonArray.length()){
+            val jsonObject = jsonArray.getJSONObject(x)
+            val tweetText = jsonObject.getString("text")
+//            val tweetCreate = jsonObject.getString("created_at")
+
+            list.add(Tweet(tweetText))
+        }
+        table_main.adapter = TweetViewAdapter(list)
     }
 }
