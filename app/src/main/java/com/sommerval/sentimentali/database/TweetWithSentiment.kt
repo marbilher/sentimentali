@@ -20,4 +20,5 @@ data class TweetWithSentiment(
 
     @ColumnInfo(name = "tweet_sentiment")
     var tweetSentiment: String? = "No sentiment written to field"  //Refactor to avoid potential NPE
+
 )
