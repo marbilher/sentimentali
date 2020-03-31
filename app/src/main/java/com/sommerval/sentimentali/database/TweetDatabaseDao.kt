@@ -21,6 +21,6 @@ interface TweetDatabaseDao {
     @Query("SELECT * FROM tweet_with_sentiment_table ORDER BY tweetId DESC LIMIT 1")
     fun getTweet(): TweetWithSentiment?
 
-    @Query("SELECT * FROM tweet_with_sentiment_table ORDER BY tweetId DESC")
-    fun getAllTweets(): LiveData<List<TweetWithSentiment>>
+    @Query("SELECT * FROM tweet_with_sentiment_table ORDER BY tweet_createDate DESC")
+    fun getAllTweets(): List<TweetWithSentiment>
 }

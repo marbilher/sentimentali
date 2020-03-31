@@ -19,6 +19,9 @@ data class TweetWithSentiment(
     var endTimeMilli: Long = startTimeMilli,
 
     @ColumnInfo(name = "tweet_sentiment")
-    var tweetSentiment: String? = "No sentiment written to field"  //Refactor to avoid potential NPE
+    var tweetSentiment: Float = 0f,  //Refactor to avoid potential NPE
+
+    @ColumnInfo(name = "tweet_createDate")
+    var createDate: Long = 0 //Refactor to avoid potential NPE
 
 )

@@ -3,14 +3,9 @@ package com.sommerval.sentimentali
 import com.google.gson.annotations.SerializedName
 
 
-data class Tweet (
+data class Tweet (var text: String, var created_at: String)
 
-    val text : String
-//    val createDate : String
-
-)
-
-//    @SerializedName("created_at")
+//    @SerializedName("created_at")     //Read up on the serialized name annotation
 //    var dateCreated: String? = null
 //
 //    @SerializedName("id")
